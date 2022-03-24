@@ -1,25 +1,26 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useEffect, useReducer } from "react";
+import NotesForm from "./components/NotesForm";
+import NotesList from "./components/NotesList";
+import NotesContext from "./context/notesContext";
+import notesReducer from "./reducers/noteReducer";
 
-function App() {
+export default function App() {
+  const [notes, dispatch] = useReducer(notesReducer, []);
+
+  useEffect(() => {
+    const notes = JSON.parse(localStorage.getItem("notes-usecontext"));
+    dispatch({ type: "GET_NOTES", notes });
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem("notes-usecontext", JSON.stringify(notes));
+    console.log(notes);
+  }, [notes]);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <NotesContext.Provider value={{ notes, dispatch }}>
+      <NotesForm />
+      <NotesList />
+    </NotesContext.Provider>
   );
 }
-
-export default App;
